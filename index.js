@@ -1,9 +1,9 @@
-// Section 6, video 4
 
+let main_func = () => {
 // this import brings the crypto-js library into the context of this file
 const SHA256 = require('crypto-js/sha256');
 
-
+// Transaction class which contains payer, payee, time and amount
 class Transaction {
     constructor( timestamp, payerAddr, payeeAddr, amount) {
         this.timestamp = timestamp;
@@ -12,25 +12,27 @@ class Transaction {
         this.amount = amount;
     }
 }
-
 // a classes are blueprints for objects that we need
+//block class contains transactions, prev hash ( for integrity ), time, hash ,..
 class Block {
     // the constructor always runs when an object of this class is instantiated
     constructor( timestamp, txns, previousHash ) {
         this.timestamp = timestamp;
-        this.txns = txns;
+        this.txns = txns;//transactions
         this.previousHash = previousHash;
+        /* when the miner wants to find the hash this value will be added to out data so that it will be a new hash everytime */
         this.nonce = 0;
         this.hash = this.calculateHash();
     }
     
     //uses crypto-js's SHA256 encryption to create a has of our block data
     calculateHash() {
-        return SHA256( this.index + this.previousHash + this.timestamp + JSON.stringify( this.data) + this.nonce ).toString();
+        return SHA256( this.previousHash + this.timestamp + JSON.stringify( this.data) + this.nonce ).toString();
     }   
-    
+    //difficulty is the number of 0's needed in start of our hash
     mineBlock( difficulty ) {
         let count = 0;
+        //chech the start of the hash with array of 0's
         while( this.hash.substring( 0, difficulty) !== Array( difficulty + 1 ).join( "0" ) ) {
             this.nonce++;  // '++' is the JavaScript incrementor operator (adds 1 to the nonce integer)
             count++;
@@ -40,7 +42,7 @@ class Block {
         console.log( "Block successfully hashed: (" + count + " iterations).  Hash: " + this.hash );
     }
 }
-
+//this class will keep the blocks
 class Blockchain {
     constructor() {
         this.chain = [];
@@ -51,7 +53,7 @@ class Blockchain {
         this.createGenesisBlock();
         this.airdropCoins( 100 );
     }
-    
+    //give coin to them in start point
     airdropCoins( coins ) {
         for ( const addr of this.registeredAddresses ) {
             let txn = new Transaction( Date.now(), "mint", addr, coins );
@@ -59,7 +61,7 @@ class Blockchain {
         }
         this.mineCurrentBlock( 'wallet-Miner49r' );
     }
-    
+    // the first block!!
     createGenesisBlock() {
         let txn = new Transaction( Date.now(), "mint", "genesis", 0 );
         let block = new Block( Date.now(), [ txn ], "0" );
@@ -141,7 +143,7 @@ class Blockchain {
     }
 }
 
-
+let demo = () => {
 // run the above code
 let demoCoin = new Blockchain();
 
@@ -165,3 +167,7 @@ demoCoin.mineCurrentBlock( 'wallet-Miner49r' );
 console.log( "\nBalance: Alice: ", + demoCoin.getAddressBalance( 'wallet-Alice' ) );
 console.log( "\nBalance: Bob: ", + demoCoin.getAddressBalance( 'wallet-Bob' ) );
 console.log( "\nBalance: Miner49r: ", + demoCoin.getAddressBalance( 'wallet-Miner49r' ) );
+}
+demo();
+}
+main_func();
