@@ -7,4 +7,4 @@ I tried to comment all of the code so it will be easy to undrestand
 
 for running the code plz add this to your terminal:
 
-node index.js
+<code>node index.js</code>
